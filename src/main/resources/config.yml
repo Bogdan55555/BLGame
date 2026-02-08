@@ -1,0 +1,34 @@
+allshop:
+  title: "§dОбычный магазин"
+  prices: [1,3,5,9,15,30]
+  material: EMERALD
+  items:
+    helmet:
+      material: DIAMOND_HELMET
+      price: 3
+      enchantments:
+        PROTECTION: 2
+      maxdamage: 300
+
+tshop:
+  title: "§6Террорист магазин"
+  prices: [1,3,5,9,15,30]
+  material: BLAZE_ROD
+  items:
+    axe:
+      material: NETHERITE_AXE
+      price: 9
+      enchantments: null
+      maxdamage: 500
+
+ktshop:
+  title: "§9Спецназ магазин"
+  prices: [1,3,5,9,15,30]
+  material: BREEZE_ROD
+  items:
+    bow:
+      material: BOW
+      price: 5
+      enchantments:
+        POWER: 3
+      maxdamage: 250

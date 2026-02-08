@@ -1,0 +1,17 @@
+name: BLGame
+version: '1.0'
+main: com.bog55555dan.bLGame.BLGame
+api-version: '1.21'
+authors: [ Bog55555dan ]
+
+commands:
+  blgame:
+    aliases: ["blg"]
+    description: Команда для управления плагином на магазины
+    usage: /blgame <args> <args>
+    permission: blgame.admin
+
+permissions:
+  blgame.admin:
+    description: Пермишен на управление плагином на магазины
+    default: op
