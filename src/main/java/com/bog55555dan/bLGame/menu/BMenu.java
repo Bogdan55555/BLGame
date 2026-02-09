@@ -89,7 +89,7 @@ public class BMenu implements Listener {
                     for (String enchId : enchIds) {
                         try {
                             int level = config.getInt(temp +".items." + itemId + ".enchantments." + enchId);
-                            meta.addEnchant(Objects.requireNonNull(Enchantment.getByName(enchId)), level, false);
+                            meta.addEnchant(Objects.requireNonNull(Enchantment.getByName(enchId)), level, true);
                         } catch (Exception e) {
                             plugin.getLogger().severe("CRITICAL ERROR при загрузке зачарования '" + enchId + " " + itemId + "': " + e.getClass().getSimpleName() + " - " + e.getMessage());
                             e.printStackTrace();
