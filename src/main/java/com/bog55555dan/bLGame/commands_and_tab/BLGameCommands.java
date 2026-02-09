@@ -1,8 +1,8 @@
 package com.bog55555dan.bLGame.commands_and_tab;
 
-import com.bog55555dan.bLGame.Listeners.BLGameListener;
-import com.bog55555dan.bLGame.shop.KEYS;
-import com.bog55555dan.bLGame.shop.StickShop;
+import com.bog55555dan.bLGame.listeners.BLGameListener;
+import com.bog55555dan.bLGame.KEYS.KEYS;
+import com.bog55555dan.bLGame.shopItem.StickShop;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -49,7 +49,7 @@ public class BLGameCommands implements CommandExecutor {
         switch (args[0]){
             case "purchase":
                 if (args.length < 2){
-                    commandSender.sendMessage("§cТак нельзя!");
+                    commandSender.sendMessage("§cНедостаточно аргументов!");
                     return true;
                 }
 
@@ -62,13 +62,54 @@ public class BLGameCommands implements CommandExecutor {
                         break;
                 }
                 break;
+            case "give":
+                if (args.length < 3){
+                    commandSender.sendMessage("§cНедостаточно аргументов!");
+                    return true;
+                }
+                giveStickShopPlayer(commandSender, args);
+                break;
             case "reload":
                 reload();
-                commandSender.sendMessage("§aПлагин перезагрузжен!");
+                commandSender.sendMessage("§aПлагин перезагружен!");
                 break;
         }
 
         return true;
+    }
+
+    private void giveStickShopPlayer(CommandSender sender, String[] args){
+        StickShop.TypeShop type = StickShop.TypeShop.ALL;
+        Material material = All_material;
+        String name = All_StickName;
+        switch (args[1]){
+            case "kt":
+                type = StickShop.TypeShop.KT;
+                material = KT_material;
+                name = KT_StickName;
+                break;
+            case "t":
+                type = StickShop.TypeShop.T;
+                material = T_material;
+                name = T_StickName;
+                break;
+            case "all":
+                type = StickShop.TypeShop.ALL;
+                material = All_material;
+                name = All_StickName;
+                break;
+        }
+
+        Player player = Bukkit.getPlayer(args[2]);
+
+        if (!Bukkit.getOnlinePlayers().contains(player)) {
+            sender.sendMessage("§cИгрока " + player.getName() +" нет в сети!");
+            return;
+        }
+
+        player.getInventory().addItem(new StickShop(type, material, name).getStickShop());
+        sender.sendMessage("§aВы выдали игроку " + player.getName() + " предмет магазина!");
+        player.sendMessage("§aВам выдали предмет магазина!");
     }
 
     private void blgStopHandle(@NotNull CommandSender sender) {
@@ -118,15 +159,15 @@ public class BLGameCommands implements CommandExecutor {
 
         for (Player player : Bukkit.getOnlinePlayers()){
             if (getTeam(player).contains("k")){
-                StickShop stickShop = new StickShop(plugin, StickShop.TypeShop.KT, KT_material, KT_StickName);
+                StickShop stickShop = new StickShop(StickShop.TypeShop.KT, KT_material, KT_StickName);
                 player.getInventory().addItem(stickShop.getStickShop());
             }
             else if (getTeam(player).contains("t")){
-                StickShop stickShop = new StickShop(plugin, StickShop.TypeShop.T, T_material, T_StickName);
+                StickShop stickShop = new StickShop(StickShop.TypeShop.T, T_material, T_StickName);
                 player.getInventory().addItem(stickShop.getStickShop());
             }
 
-            StickShop stickShop = new StickShop(plugin, StickShop.TypeShop.ALL, All_material, All_StickName);
+            StickShop stickShop = new StickShop(StickShop.TypeShop.ALL, All_material, All_StickName);
             player.getInventory().addItem(stickShop.getStickShop());
         }
 

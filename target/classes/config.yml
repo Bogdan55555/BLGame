@@ -4,11 +4,26 @@ allshop:
   material: EMERALD
   items:
     helmet:
+      display_name: "§dТипо крутой шлем"
       material: DIAMOND_HELMET
       price: 3
+      amount: 1
       enchantments:
         PROTECTION: 2
       maxdamage: 300
+    potion:
+      display_name: "Test"
+      material: POTION
+      price: 5
+      amount: 10
+      color: "#FF0000"
+      effects:
+        - type: SPEED
+          amplifier: 2
+          duration: 2000
+        - type: JUMP_BOOST
+          amplifier: 1
+          duration: 1000
 
 tshop:
   title: "§6Террорист магазин"
@@ -16,10 +31,22 @@ tshop:
   material: BLAZE_ROD
   items:
     axe:
+      display_name: "§dТипо крутой топор"
       material: NETHERITE_AXE
       price: 9
+      amount: 1
       enchantments: null
       maxdamage: 500
+    arrow:
+      display_name: "§dТипо крутая стрела!!!!!"
+      material: TIPPED_ARROW
+      price: 15
+      amount: 64
+      color: "#FFFFFF"
+      effects:
+        - type: SPEED
+          amplifier: 4
+          duration: 5000
 
 ktshop:
   title: "§9Спецназ магазин"
@@ -27,8 +54,10 @@ ktshop:
   material: BREEZE_ROD
   items:
     bow:
+      display_name: "§dТипо крутой лук"
       material: BOW
       price: 5
+      amount: 1
       enchantments:
         POWER: 3
       maxdamage: 250

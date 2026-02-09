@@ -1,7 +1,7 @@
-package com.bog55555dan.bLGame.Listeners;
+package com.bog55555dan.bLGame.listeners;
 
-import com.bog55555dan.bLGame.shop.KEYS;
-import com.bog55555dan.bLGame.shop.StickShop;
+import com.bog55555dan.bLGame.KEYS.KEYS;
+import com.bog55555dan.bLGame.shopItem.StickShop;
 import com.bog55555dan.bLGame.menu.BMenu;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -52,6 +52,7 @@ public class BLGameListener implements Listener {
         }
 
         if (meta == null) return;
+
         if (meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "KT_KEY"), PersistentDataType.STRING)){
             event.setCancelled(true);
             bMenuKT.open(player);

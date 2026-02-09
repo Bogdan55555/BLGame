@@ -1,6 +1,7 @@
 package com.bog55555dan.bLGame.menu;
 
-import com.bog55555dan.bLGame.shop.StickShop;
+import com.bog55555dan.bLGame.shopItem.StickShop;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,7 +15,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -35,6 +39,7 @@ public class BMenu implements Listener {
 
     public void init() {
         FileConfiguration config = plugin.getConfig();
+        items.clear();
 
         String temp = "tshop";
         if (typeShop == StickShop.TypeShop.KT)
@@ -52,7 +57,6 @@ public class BMenu implements Listener {
 
         prices = (List<Integer>) config.get(temp + ".prices");
 
-
         ConfigurationSection itemsSection = config.getConfigurationSection(temp + ".items");
         if (itemsSection == null) {
             plugin.getLogger().severe("Секция '" + temp + ".items' не найдена в config.yml!");
@@ -62,6 +66,8 @@ public class BMenu implements Listener {
         for (String itemId : itemsIds){
             try {
                 int price = config.getInt(temp + ".items." + itemId + ".price");
+                int amount = config.getInt(temp + ".items." + itemId + ".amount");
+                String display_name = config.getString(temp + ".items." + itemId + ".display_name");
                 Object maxdamage = config.get(temp + ".items." + itemId + ".maxdamage");
 
                 String materialName = config.getString(temp + ".items." + itemId + ".material");
@@ -71,7 +77,11 @@ public class BMenu implements Listener {
                     continue;
                 }
                 ItemStack item = new ItemStack(material);
+                item.setAmount(amount);
                 ItemMeta meta = item.getItemMeta();
+                meta.setMaxStackSize(amount);
+                if (display_name != null)
+                    meta.setDisplayName(display_name);
 
                 ConfigurationSection section = config.getConfigurationSection(temp + ".items." + itemId + ".enchantments");
                 if (section != null) {
@@ -92,6 +102,39 @@ public class BMenu implements Listener {
                 }
 
                 item.setItemMeta(meta);
+
+                if (material.equals(Material.POTION) || material.equals(Material.SPLASH_POTION) || material.equals(Material.LINGERING_POTION) || material.equals(Material.TIPPED_ARROW)) {
+                    try {
+                        List<?> effectList = config.getList(temp + ".items." + itemId + ".effects");
+                        List<PotionEffect> effects = new ArrayList<>();
+                        if (effectList != null) {
+                            for (Object obj : effectList) {
+                                if (obj instanceof Map) {
+                                    Map<?, ?> map = (Map<?, ?>) obj;
+                                    PotionEffectType type = PotionEffectType.getByName((String) map.get("type"));
+                                    int amplifier = (int) map.get("amplifier");
+                                    int duration = (int) map.get("duration");
+
+                                    if (type != null) {
+                                        effects.add(new PotionEffect(type, duration, amplifier));
+                                    }
+                                }
+                            }
+                        }
+                        if (meta instanceof PotionMeta potionMeta) {
+                            for (PotionEffect effect : effects) {
+                                potionMeta.addCustomEffect(effect, true);
+                            }
+                            Color color = hexToColor(config.getString(temp + ".items." + itemId + ".color"));
+                            potionMeta.setColor(color);
+                            item.setItemMeta(potionMeta);
+                        }
+                    } catch (Exception e) {
+                        plugin.getLogger().severe("CRITICAL ERROR при загрузке зелья или стрелы'" + itemId + "': " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+
                 items.put(item, price);
             }
             catch (Exception e) {
@@ -147,6 +190,13 @@ public class BMenu implements Listener {
         player.openInventory(inv);
     }
 
+    public static Color hexToColor(String hex) {
+        hex = hex.replace("#", "");
+        int r = Integer.parseInt(hex.substring(0, 2), 16);
+        int g = Integer.parseInt(hex.substring(2, 4), 16);
+        int b = Integer.parseInt(hex.substring(4, 6), 16);
+        return Color.fromRGB(r, g, b);
+    }
 
     @EventHandler
     public void onClickInv(InventoryClickEvent event) {

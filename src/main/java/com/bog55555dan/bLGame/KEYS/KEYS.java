@@ -1,4 +1,4 @@
-package com.bog55555dan.bLGame.shop;
+package com.bog55555dan.bLGame.KEYS;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
