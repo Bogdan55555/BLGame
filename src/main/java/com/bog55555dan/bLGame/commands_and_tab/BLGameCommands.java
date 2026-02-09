@@ -103,12 +103,12 @@ public class BLGameCommands implements CommandExecutor {
         Player player = Bukkit.getPlayer(args[2]);
 
         if (!Bukkit.getOnlinePlayers().contains(player)) {
-            sender.sendMessage("§cИгрока " + player.getName() +" нет в сети!");
+            sender.sendMessage("§cИгрока " + args[2] +" нет в сети!");
             return;
         }
 
         player.getInventory().addItem(new StickShop(type, material, name).getStickShop());
-        sender.sendMessage("§aВы выдали игроку " + player.getName() + " предмет магазина!");
+        sender.sendMessage("§aВы выдали игроку " + args[2] + " предмет магазина!");
         player.sendMessage("§aВам выдали предмет магазина!");
     }
 
