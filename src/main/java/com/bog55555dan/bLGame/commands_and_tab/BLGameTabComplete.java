@@ -23,11 +23,11 @@ public class BLGameTabComplete implements TabCompleter {
                 .collect(Collectors.toList());
 
         if (args.length == 1)
-            completions.addAll(Arrays.asList("reload", "purchase", "give"));
+            completions.addAll(Arrays.asList("reload", "game", "give", "setmenu"));
         else if (args.length == 2 && args[0].equalsIgnoreCase("purchase"))
             completions.addAll(Arrays.asList("start", "stop"));
-        else if (args.length == 2 && args[0].equalsIgnoreCase("give"))
-            completions.addAll(Arrays.asList("kt", "t", "all"));
+        else if (args.length == 2 && args[0].equalsIgnoreCase("give") || args.length == 2 && args[0].equalsIgnoreCase("setmenu"))
+            completions.addAll(Arrays.asList("kt", "t", "all", "kitstart"));
         else if (args.length == 3 && args[1].equalsIgnoreCase("kt") ||
                 args.length == 3 && args[1].equalsIgnoreCase("t") ||
                 args.length == 3 && args[1].equalsIgnoreCase("all"))

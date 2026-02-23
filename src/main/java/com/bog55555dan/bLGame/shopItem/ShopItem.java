@@ -9,17 +9,20 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
-public class StickShop {
+public class ShopItem {
 
     private ItemStack itemStack;
 
-    public enum TypeShop{
+    public enum Type {
         KT,
         T,
-        ALL
+        ALL,
+        KIT_KT,
+        KIT_T,
+        MAP_CH
     }
 
-    public StickShop(TypeShop typeShop, Material material, String name) {
+    public ShopItem(Type typeShop, Material material, String name) {
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -31,10 +34,10 @@ public class StickShop {
         meta.setMaxStackSize(1);
 
         NamespacedKey KEY = KEYS.T_KEY;
-        if (typeShop == TypeShop.KT) {
+        if (typeShop == Type.KT) {
             KEY = KEYS.KT_KEY;
         }
-        else if (typeShop == TypeShop.ALL){
+        else if (typeShop == Type.ALL){
             KEY = KEYS.ALL_KEY;
         }
 

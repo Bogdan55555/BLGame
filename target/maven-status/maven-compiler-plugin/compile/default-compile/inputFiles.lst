@@ -1,7 +1,12 @@
 D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\BLGame.java
 D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\commands_and_tab\BLGameCommands.java
 D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\commands_and_tab\BLGameTabComplete.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\game\Game.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\game\MapLocData.java
 D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\KEYS\KEYS.java
 D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\listeners\BLGameListener.java
-D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\menu\BMenu.java
-D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\shopItem\StickShop.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\menu\KitStartMenu.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\menu\MapChoiseMenu.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\menu\MenuDataInit.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\menu\ShopMenu.java
+D:\Программирование\Java\Проекты\BLGame\src\main\java\com\bog55555dan\bLGame\shopItem\ShopItem.java

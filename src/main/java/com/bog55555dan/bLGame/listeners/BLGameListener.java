@@ -1,8 +1,9 @@
 package com.bog55555dan.bLGame.listeners;
 
 import com.bog55555dan.bLGame.KEYS.KEYS;
-import com.bog55555dan.bLGame.shopItem.StickShop;
-import com.bog55555dan.bLGame.menu.BMenu;
+import com.bog55555dan.bLGame.menu.MenuDataInit;
+import com.bog55555dan.bLGame.shopItem.ShopItem;
+import com.bog55555dan.bLGame.menu.ShopMenu;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -23,18 +25,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BLGameListener implements Listener {
 
     private JavaPlugin plugin;
-    private BMenu bMenuKT, bMenuT, bMenuAll;
+    private ShopMenu shopMenuKT, shopMenuT, shopMenuAll;
+    private double gold_after_kill;
 
-    public BLGameListener(JavaPlugin plugin){
+    public BLGameListener(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.bMenuKT = new BMenu(plugin, StickShop.TypeShop.KT);
-        this.bMenuT = new BMenu(plugin, StickShop.TypeShop.T);
-        this.bMenuAll = new BMenu(plugin, StickShop.TypeShop.ALL);
+        this.shopMenuKT = new ShopMenu(plugin, ShopItem.Type.KT, false);
+        this.shopMenuT = new ShopMenu(plugin, ShopItem.Type.T, false);
+        this.shopMenuAll = new ShopMenu(plugin, ShopItem.Type.ALL, false);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
-    public void onInter(PlayerInteractEvent event){
+    public void onInter(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR)
@@ -53,17 +56,15 @@ public class BLGameListener implements Listener {
 
         if (meta == null) return;
 
-        if (meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "KT_KEY"), PersistentDataType.STRING)){
+        if (meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "KT_KEY"), PersistentDataType.STRING)) {
             event.setCancelled(true);
-            bMenuKT.open(player);
-        }
-        else if (meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "T_KEY"), PersistentDataType.STRING)){
+            shopMenuKT.open(player);
+        } else if (meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "T_KEY"), PersistentDataType.STRING)) {
             event.setCancelled(true);
-            bMenuT.open(player);
-        }
-        else if(meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "ALL_KEY"), PersistentDataType.STRING)){
+            shopMenuT.open(player);
+        } else if (meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "ALL_KEY"), PersistentDataType.STRING)) {
             event.setCancelled(true);
-            bMenuAll.open(player);
+            shopMenuAll.open(player);
         }
     }
 
@@ -120,9 +121,27 @@ public class BLGameListener implements Listener {
         return false;
     }
 
-    public void reload(){
-        this.bMenuKT.init();
-        this.bMenuT.init();
-        this.bMenuAll.init();
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        Player victim = event.getEntity();
+
+        if (killer == null || !(killer instanceof Player)) return;
+        if (victim == null) return;
+
+        if (MenuDataInit.getFreeSlotsInMainInventory(killer) < Math.ceil(gold_after_kill/64)) {
+            killer.sendMessage("§aУ вас недостаточно места в инвентаре для золота!");
+            return;
+        }
+
+        killer.getInventory().addItem(new ItemStack(Material.GOLD_INGOT, (int)gold_after_kill));
+        killer.sendMessage("§aЗа убийство " + victim.getName() + " вы получили " + gold_after_kill + " золота!");
+    }
+
+    public void reload() {
+        this.shopMenuKT.init();
+        this.shopMenuT.init();
+        this.shopMenuAll.init();
+        gold_after_kill = plugin.getConfig().getDouble("game.gold_after_kill");
     }
 }

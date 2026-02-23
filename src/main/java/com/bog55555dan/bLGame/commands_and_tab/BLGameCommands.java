@@ -1,15 +1,20 @@
 package com.bog55555dan.bLGame.commands_and_tab;
 
+import com.bog55555dan.bLGame.game.Game;
 import com.bog55555dan.bLGame.listeners.BLGameListener;
 import com.bog55555dan.bLGame.KEYS.KEYS;
-import com.bog55555dan.bLGame.shopItem.StickShop;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
+import com.bog55555dan.bLGame.menu.KitStartMenu;
+import com.bog55555dan.bLGame.menu.MapChoiseMenu;
+import com.bog55555dan.bLGame.menu.ShopMenu;
+import com.bog55555dan.bLGame.shopItem.ShopItem;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.TitlePart;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -18,19 +23,30 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class BLGameCommands implements CommandExecutor {
 
     private JavaPlugin plugin;
     private BLGameListener listener;
-    private Material KT_material, T_material, All_material;
-    private String KT_StickName, T_StickName, All_StickName;
+    private ShopMenu setMenuKT, setMenuT, setMenuAll;
+    private String mapId;
+    private Game game;
 
     public BLGameCommands(JavaPlugin plugin, BLGameListener listener){
         plugin.getCommand("blgame").setExecutor(this);
         this.plugin = plugin;
         this.listener = listener;
+        setMenuKT = new ShopMenu(plugin, ShopItem.Type.KT, true);
+        setMenuT = new ShopMenu(plugin, ShopItem.Type.T, true);
+        setMenuAll = new ShopMenu(plugin, ShopItem.Type.ALL, true);
+        game = new Game(plugin);
         reload();
     }
 
@@ -47,7 +63,7 @@ public class BLGameCommands implements CommandExecutor {
         }
 
         switch (args[0]){
-            case "purchase":
+            case "game":
                 if (args.length < 2){
                     commandSender.sendMessage("§cНедостаточно аргументов!");
                     return true;
@@ -55,19 +71,26 @@ public class BLGameCommands implements CommandExecutor {
 
                 switch (args[1]){
                     case "start":
-                        blgStartHandle(commandSender);
+                        game.gameStart();
                         break;
                     case "stop":
-                        blgStopHandle(commandSender);
+                        game.gameStop();
                         break;
                 }
+                break;
+            case "setmenu":
+                if (args.length < 2){
+                    commandSender.sendMessage("§cНедостаточно аргументов!");
+                    return true;
+                }
+                openSetMenuPlayer((Player) commandSender, args);
                 break;
             case "give":
                 if (args.length < 3){
                     commandSender.sendMessage("§cНедостаточно аргументов!");
                     return true;
                 }
-                giveStickShopPlayer(commandSender, args);
+                giveShopItemPlayer(commandSender, args);
                 break;
             case "reload":
                 reload();
@@ -78,25 +101,45 @@ public class BLGameCommands implements CommandExecutor {
         return true;
     }
 
-    private void giveStickShopPlayer(CommandSender sender, String[] args){
-        StickShop.TypeShop type = StickShop.TypeShop.ALL;
-        Material material = All_material;
-        String name = All_StickName;
+    private void openSetMenuPlayer(Player player, String[] args) {
         switch (args[1]){
             case "kt":
-                type = StickShop.TypeShop.KT;
-                material = KT_material;
-                name = KT_StickName;
+                setMenuKT.open(player);
                 break;
             case "t":
-                type = StickShop.TypeShop.T;
-                material = T_material;
-                name = T_StickName;
+                setMenuT.open(player);
                 break;
             case "all":
-                type = StickShop.TypeShop.ALL;
-                material = All_material;
-                name = All_StickName;
+                setMenuAll.open(player);
+                break;
+            case "kitstartKT":
+                game.openKitMenu(player, ShopItem.Type.KT);
+                break;
+            case "kitstartT":
+                game.openKitMenu(player, ShopItem.Type.T);
+                break;
+        }
+    }
+
+    private void giveShopItemPlayer(CommandSender sender, String[] args){
+        ShopItem.Type type = ShopItem.Type.ALL;
+        Material material = game.getAll_material();
+        String name = game.getAll_StickName();
+        switch (args[1]){
+            case "kt":
+                type = ShopItem.Type.KT;
+                material = game.getKT_material();
+                name = game.getKT_StickName();
+                break;
+            case "t":
+                type = ShopItem.Type.T;
+                material = game.getT_material();
+                name = game.getT_StickName();
+                break;
+            case "all":
+                type = ShopItem.Type.ALL;
+                material = game.getAll_material();
+                name = game.getAll_StickName();
                 break;
         }
 
@@ -107,70 +150,9 @@ public class BLGameCommands implements CommandExecutor {
             return;
         }
 
-        player.getInventory().addItem(new StickShop(type, material, name).getStickShop());
+        player.getInventory().addItem(new ShopItem(type, material, name).getStickShop());
         sender.sendMessage("§aВы выдали игроку " + args[2] + " предмет магазина!");
         player.sendMessage("§aВам выдали предмет магазина!");
-    }
-
-    private void blgStopHandle(@NotNull CommandSender sender) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            Inventory inventory = player.getInventory();
-            boolean itemsRemoved = false;
-
-            for (int slot = 0; slot < inventory.getSize(); slot++) {
-                ItemStack item = inventory.getItem(slot);
-
-                if (item == null || item.getType() == Material.AIR) {
-                    continue;
-                }
-
-                ItemMeta meta = item.getItemMeta();
-                if (meta == null) {
-                    continue;
-                }
-
-                PersistentDataContainer pdc = meta.getPersistentDataContainer();
-                NamespacedKey[] keysToCheck = {
-                        KEYS.KT_KEY,
-                        KEYS.T_KEY,
-                        KEYS.ALL_KEY
-                };
-
-                for (NamespacedKey key : keysToCheck) {
-                    if (pdc.has(key, PersistentDataType.STRING)) {
-                        inventory.setItem(slot, new ItemStack(Material.AIR));
-                        itemsRemoved = true;
-                        break;
-                    }
-                }
-            }
-
-            if (itemsRemoved) {
-                player.sendMessage("§cВаши предметы магазина были удалены из инвентаря!");
-                player.playSound(player.getLocation(), Sound.ENTITY_GHAST_WARN, 1.0f, 1.0f);
-            }
-        }
-
-        sender.sendMessage("§aОбработка завершена: предметы удалены у всех игроков.");
-    }
-
-
-    private void blgStartHandle(@NotNull CommandSender sender) {
-
-        for (Player player : Bukkit.getOnlinePlayers()){
-            if (getTeam(player).contains("k")){
-                StickShop stickShop = new StickShop(StickShop.TypeShop.KT, KT_material, KT_StickName);
-                player.getInventory().addItem(stickShop.getStickShop());
-            }
-            else if (getTeam(player).contains("t")){
-                StickShop stickShop = new StickShop(StickShop.TypeShop.T, T_material, T_StickName);
-                player.getInventory().addItem(stickShop.getStickShop());
-            }
-
-            StickShop stickShop = new StickShop(StickShop.TypeShop.ALL, All_material, All_StickName);
-            player.getInventory().addItem(stickShop.getStickShop());
-        }
-
     }
 
     private void helpHandle(@NotNull CommandSender sender) {
@@ -183,23 +165,14 @@ public class BLGameCommands implements CommandExecutor {
         sender.sendMessage("§e/blgame shopGUI §7—-> открыть меню настройки общего магазина");
     }
 
-    public static String getTeam(Player p){
-        if(p.getScoreboard().getEntryTeam(p.getName())!=null)
-            return p.getScoreboard().getEntryTeam(p.getName()).getName();
-        return "";
-    }
-
     private void reload() {
         plugin.reloadConfig();
-        FileConfiguration config = plugin.getConfig();
         try {
-            KT_material = Material.getMaterial(config.getString("ktshop.material"));
-            T_material = Material.getMaterial(config.getString("tshop.material"));
-            All_material = Material.getMaterial(config.getString("allshop.material"));
-            KT_StickName = config.getString("ktshop.title");
-            T_StickName = config.getString("tshop.title");
-            All_StickName = config.getString("allshop.title");
+            setMenuAll.init();
+            setMenuT.init();
+            setMenuKT.init();
             listener.reload();
+            game.reload();
         }
         catch (Exception e) {
             plugin.getLogger().severe("CRITICAL ERROR при перезагрузке '" + e.getClass().getSimpleName() + " - " + e.getMessage());
