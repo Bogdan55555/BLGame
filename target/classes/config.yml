@@ -3,6 +3,7 @@ game:
   gol_phase: 10
   pur_phase: 20 # СЕКУНДЫ
   start_phase: 300
+  max_rounds: 12
 
 # Картам можно задать только эти настройки
 maps:

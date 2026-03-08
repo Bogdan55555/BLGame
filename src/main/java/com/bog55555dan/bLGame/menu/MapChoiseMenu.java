@@ -3,6 +3,7 @@ package com.bog55555dan.bLGame.menu;
 import com.bog55555dan.bLGame.game.Game;
 import com.bog55555dan.bLGame.shopItem.ShopItem;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,6 +44,10 @@ public class MapChoiseMenu implements Listener {
     public void open (Player player) {
         if (inv == null) {
             inv = Bukkit.createInventory(null, 54, title);
+        }
+
+        for (int i = 0; i < 55; i++) {
+            inv.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
 
         for (Map.Entry<ItemStack, Integer> entry : maps.entrySet()) {
