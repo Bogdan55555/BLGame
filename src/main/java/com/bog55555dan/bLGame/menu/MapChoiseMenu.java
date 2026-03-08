@@ -46,7 +46,7 @@ public class MapChoiseMenu implements Listener {
             inv = Bukkit.createInventory(null, 54, title);
         }
 
-        for (int i = 0; i < 55; i++) {
+        for (int i = 0; i < 54; i++) {
             inv.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
 

