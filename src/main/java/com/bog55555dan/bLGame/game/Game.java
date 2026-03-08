@@ -475,6 +475,7 @@ public class Game implements Listener {
 
     private void purStart() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            tpPlayerToPurLoc(player);
             if (getTeam(player).contains("kt")) {
                 ShopItem shopItem = new ShopItem(ShopItem.Type.KT, KT_material, KT_StickName);
                 player.getInventory().addItem(shopItem.getStickShop());
@@ -684,8 +685,8 @@ public class Game implements Listener {
         boolean allTDead = true;
         for (Player p : Bukkit.getOnlinePlayers()) {
             String team = getTeam(p);
-            if (team.contains("kt") && !p.isDead()) allKTDead = false;
-            if (team.contains("t") && !p.isDead()) allTDead = false;
+            if (team.equals("kt") && !p.isDead()) allKTDead = false;
+            if (team.equals("t") && !p.isDead()) allTDead = false;
         }
 
         if (allKTDead && !allTDead) {

